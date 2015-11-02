@@ -1,4 +1,4 @@
 # Spreadsheet
 
-* Spreadsheet Project*
-* TO DO *
+* Spreadsheet Project
+# TO DO
