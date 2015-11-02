@@ -1,0 +1,2 @@
+#!/bin/bash
+gcc --pedantic -o run $(pkg-config --cflags --libs gtk+-3.0) $1
