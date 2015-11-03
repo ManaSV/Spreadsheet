@@ -1,0 +1,9 @@
+Para compilar en ubuntu es necesario instalar los
+siguientes paquetes
+
+- libgtk-3-dev
+- libgtk2.0-dev
+
+Dependencias de arch
+
+- gtk3 ( ya viene pre-instalado )

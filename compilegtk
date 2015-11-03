@@ -1,2 +1,3 @@
 #!/bin/bash
-gcc --pedantic -o run $(pkg-config --cflags --libs gtk+-3.0) $1
+gcc -std=c99  `pkg-config --cflags gtk+-3.0`-o run $1 -Wall `pkg-config --libs gtk+-3.0`
+#*buntu compatible
