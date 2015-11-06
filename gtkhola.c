@@ -15,7 +15,7 @@ int main (int argc, char *argv[]) {
 	gchar** x_label = malloc( sizeof( gchar* ) * x );
 	gchar** y_label = malloc( sizeof( gchar* ) * y );
 	set_label_number( x_label, x );
-	set_label_number( y_label, x );
+	set_label_number( y_label, y );
 	GtkWidget* window = gtk_window_new( GTK_WINDOW_TOPLEVEL );
 	GtkWidget** buttonx = malloc( sizeof( GtkWidget* ) * x );
 	GtkWidget** buttony = malloc( sizeof( GtkWidget* ) * y );
@@ -39,9 +39,10 @@ int main (int argc, char *argv[]) {
 	gtk_grid_attach( (GtkGrid*)grid, label, 3, 2, 1, 1 );
 	gtk_grid_set_row_spacing( (GtkGrid*)grid, 2 );
 	gtk_grid_set_column_spacing( (GtkGrid*)grid, 2 );
+	//estas dos lineas lo hacen adaptable a la pantalla, las celdas
+	//siempre tendran el mismo tamaño entre si
 	gtk_grid_set_column_homogeneous( (GtkGrid*)grid, TRUE );
-	gtk_grid_set_row_homogeneous( (GtkGrid*)grid, FALSE );
-	gtk_window_set_default_size( (GtkWindow*)window, 300, 200 );
+	gtk_grid_set_row_homogeneous( (GtkGrid*)grid, TRUE );
 	gtk_container_add( (GtkContainer*)window, grid );
 	gtk_window_set_title( (GtkWindow*)window, "Senpai simulator 2015" );
 	gtk_widget_show_all( window );
@@ -54,7 +55,7 @@ static void button_clicked( GtkWidget* widget, gpointer data ){
 }
 
 void set_label_number( gchar** string, int lim ){
-	int i, j = 0, vuelta = 0;
+	int i = 0, j = 0, vuelta = 0;
 	if( lim > 99 )
 		return;
 	for( i = 0; i < lim; i++ ){
