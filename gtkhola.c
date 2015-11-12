@@ -1,15 +1,23 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <gtk/gtk.h>
+#include <glib.h>
+#include <glib/gprintf.h>
 
 enum tipo{ FILA, COLUMNA };
 
-static void button_clicked( GtkWidget* widget, gpointer data );
+static void button_clicked( GtkWidget* widget, int* data );
+static void update_cell( GtkWidget* widget, int* data );
 void set_label_number( gchar** string, int x );
 void set_guide( GtkWidget** button, gchar** label, GtkWidget* grid, int lim, int flag );
 GtkWidget*** set_cells( int x, int y, gchar*** content );
 void fill_grid( GtkWidget*** celda, gchar*** content, GtkWidget* grid, GtkWidget* window ,int x, int y );
 
+gchar* label_new; //aqui se guardara el label escrito
+GtkWidget*** celda; //aqui estan las celdas declaradas globalmente
+int*** location_array; //aqui estan las localizaciones con su boton respectivo
+int* location; // aqui se encuentra una localizacion concreta que se
+//llena cuando se clickea el boton
 
 int main (int argc, char *argv[]) {
 	gtk_init (&argc, &argv);
@@ -18,6 +26,7 @@ int main (int argc, char *argv[]) {
 	scanf( "%d", &x );
 	printf( "INGRESE NUMERO DE FILAS: " );
 	scanf( "%d", &y );
+	location = malloc( sizeof(int) * 2 );
 	GtkWidget* window = gtk_window_new( GTK_WINDOW_TOPLEVEL );
 	GtkWidget* grid = gtk_grid_new();
 	gchar** x_label = malloc( sizeof( gchar* ) * x );
@@ -29,7 +38,7 @@ int main (int argc, char *argv[]) {
 	set_guide( buttonx, x_label, grid, x, COLUMNA );
 	set_guide( buttony, y_label, grid, y, FILA );
 	gchar*** label = malloc( sizeof( gchar** ) * x );
-	GtkWidget*** celda = set_cells( x, y, label );
+	celda = set_cells( x, y, label );
 	fill_grid( celda, label, grid, window, x, y );
 	g_signal_connect( window, "delete_event",G_CALLBACK(gtk_main_quit), NULL );
 	//evento de click, uso un puntero a label para modificarlo en la funcion definida
@@ -48,11 +57,15 @@ int main (int argc, char *argv[]) {
     return 0;
 }
 
-static void update_cell( GtkWidget* widget, gpointer data ){
-	data = g_strconcat( (gchar*)data, gtk_entry_get_text( (GtkEntry*)widget ), NULL );
+static void update_cell( GtkWidget* widget, int* data ){
+	label_new = "";
+	label_new = g_strconcat( label_new, gtk_entry_get_text( (GtkEntry*)widget ), NULL );
+	gtk_button_set_label( (GtkButton*)celda[location[0]][location[1]], label_new );
+	label_new = "";
+	g_printf( "%s\n", label_new );
 }
 
-static void button_clicked( GtkWidget* widget, gpointer data ){
+static void button_clicked( GtkWidget* widget, int* data ){
 	GtkWidget* input_window = gtk_window_new( GTK_WINDOW_TOPLEVEL );
 	gtk_container_set_border_width( (GtkContainer*)input_window, 10 );
 	GtkWidget* box = gtk_box_new( FALSE, 0 );
@@ -62,11 +75,12 @@ static void button_clicked( GtkWidget* widget, gpointer data ){
 	gtk_entry_set_buffer( (GtkEntry*)input, buffer );
 	gtk_entry_set_icon_from_icon_name( (GtkEntry*)input, GTK_ENTRY_ICON_PRIMARY, "edit-paste" );
 	gtk_box_pack_start( GTK_BOX( box ), input, TRUE, TRUE, 5 );
-	gtk_widget_grab_focus( input );
+	gtk_button_set_label( (GtkButton*)widget, label_new );
+	location[0] = data[0];
+	location[1] = data[1];
+	g_printf( "%d, %d numero", location[0], location[1] );
+	g_signal_connect( input, "icon-press", G_CALLBACK( update_cell ), data );
 	gtk_widget_show_all( input_window );
-	g_signal_connect( G_OBJECT( input ), "icon-press", G_CALLBACK( update_cell ), data );
-	gtk_button_set_label( (GtkButton*)widget, gtk_entry_get_text( (GtkEntry*)input ) );
-	printf( "you wrote %s", (gchar*)data );
 }
 
 void set_label_number( gchar** string, int lim ){
@@ -120,15 +134,20 @@ GtkWidget*** set_cells( int x, int y, gchar*** label ){
 
 void fill_grid( GtkWidget*** celda, gchar*** label, GtkWidget* grid, GtkWidget* window, int x, int y ){
 	int i, j;
+	location_array = malloc( sizeof(int**) * x );
 	for( i = 0; i < x; i++ ){
 		label[i] = malloc( sizeof( GtkWidget* ) * y ); 
+		location_array[i] = malloc( sizeof( int* ) * y );
 	}
 	for( i = 0; i < y; i++ ){
 		for( j = 0; j < x; j++ ){
-			label[j][i] = "--";
+			label[j][i] = NULL;
 			celda[j][i] = gtk_button_new_with_label( label[j][i] );
 			gtk_grid_attach( (GtkGrid*)grid, celda[j][i], 2 + j, 2 + i, 1, 1 );
-			g_signal_connect( celda[j][i], "clicked",G_CALLBACK(button_clicked), (gpointer)label[j][i] );
+			location_array[j][i] = malloc( sizeof( int ) * 2 );
+			location_array[j][i][0] = j;
+			location_array[j][i][1] = i;
+			g_signal_connect( celda[j][i], "clicked", G_CALLBACK(button_clicked), location_array[j][i] );
 		}
 	}
 }
