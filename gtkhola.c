@@ -10,6 +10,7 @@ void set_guide( GtkWidget** button, gchar** label, GtkWidget* grid, int lim, int
 GtkWidget*** set_cells( int x, int y, gchar*** content );
 void fill_grid( GtkWidget*** celda, gchar*** content, GtkWidget* grid, GtkWidget* window ,int x, int y );
 
+
 int main (int argc, char *argv[]) {
 	gtk_init (&argc, &argv);
 	gint x, y;
@@ -47,8 +48,25 @@ int main (int argc, char *argv[]) {
     return 0;
 }
 
+static void update_cell( GtkWidget* widget, gpointer data ){
+	data = g_strconcat( (gchar*)data, gtk_entry_get_text( (GtkEntry*)widget ), NULL );
+}
+
 static void button_clicked( GtkWidget* widget, gpointer data ){
-	gtk_button_set_label( (GtkButton*)data, "Kyaaa~ Baka-senpai desu" );
+	GtkWidget* input_window = gtk_window_new( GTK_WINDOW_TOPLEVEL );
+	gtk_container_set_border_width( (GtkContainer*)input_window, 10 );
+	GtkWidget* box = gtk_box_new( FALSE, 0 );
+	gtk_container_add( (GtkContainer*)input_window, box );
+	GtkEntryBuffer* buffer = gtk_entry_buffer_new( NULL, -1 );
+	GtkWidget* input = gtk_entry_new();
+	gtk_entry_set_buffer( (GtkEntry*)input, buffer );
+	gtk_entry_set_icon_from_icon_name( (GtkEntry*)input, GTK_ENTRY_ICON_PRIMARY, "edit-paste" );
+	gtk_box_pack_start( GTK_BOX( box ), input, TRUE, TRUE, 5 );
+	gtk_widget_grab_focus( input );
+	gtk_widget_show_all( input_window );
+	g_signal_connect( G_OBJECT( input ), "icon-press", G_CALLBACK( update_cell ), data );
+	gtk_button_set_label( (GtkButton*)widget, gtk_entry_get_text( (GtkEntry*)input ) );
+	printf( "you wrote %s", (gchar*)data );
 }
 
 void set_label_number( gchar** string, int lim ){
@@ -93,7 +111,7 @@ void set_guide( GtkWidget** button, gchar** label, GtkWidget* grid, int lim, int
 GtkWidget*** set_cells( int x, int y, gchar*** label ){
 	int i;
 	GtkWidget*** celda = malloc( sizeof( GtkWidget** ) * x );
-	for( i = 0; i < y; i++ ){
+	for( i = 0; i < x; i++ ){
 		label[i] = malloc( sizeof( gchar* ) * y );
 		celda[i] = malloc( sizeof( GtkWidget* ) * y );
 	}
@@ -110,7 +128,7 @@ void fill_grid( GtkWidget*** celda, gchar*** label, GtkWidget* grid, GtkWidget* 
 			label[j][i] = "--";
 			celda[j][i] = gtk_button_new_with_label( label[j][i] );
 			gtk_grid_attach( (GtkGrid*)grid, celda[j][i], 2 + j, 2 + i, 1, 1 );
-			g_signal_connect( celda[j][i], "clicked",G_CALLBACK(button_clicked), (gpointer)celda[j][i] );
+			g_signal_connect( celda[j][i], "clicked",G_CALLBACK(button_clicked), (gpointer)label[j][i] );
 		}
 	}
 }
