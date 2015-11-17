@@ -2,22 +2,24 @@
 #include <stdio.h>
 #include <gtk/gtk.h>
 #include <glib.h>
+#include <gdk/gdkkeysyms.h>
 #include <glib/gprintf.h>
 
 enum tipo{ FILA, COLUMNA };
 
 static void button_clicked( GtkWidget* widget, int* data );
-static void update_cell( GtkWidget* widget, int* data );
 void set_label_number( gchar** string, int x );
 void set_guide( GtkWidget** button, gchar** label, GtkWidget* grid, int lim, int flag );
 GtkWidget*** set_cells( int x, int y, gchar*** content );
 void fill_grid( GtkWidget*** celda, gchar*** content, GtkWidget* grid, GtkWidget* window ,int x, int y );
+static void update_cell( GtkWidget* window, GdkEventKey* event, int* data );
 
 gchar* label_new; //aqui se guardara el label escrito
 GtkWidget*** celda; //aqui estan las celdas declaradas globalmente
 int*** location_array; //aqui estan las localizaciones con su boton respectivo
 int* location; // aqui se encuentra una localizacion concreta que se
 //llena cuando se clickea el boton
+GtkWidget* input_window;
 
 int main (int argc, char *argv[]) {
 	gtk_init (&argc, &argv);
@@ -46,7 +48,7 @@ int main (int argc, char *argv[]) {
 	//(gpointer)algo, con lo cual se interactua
 	gtk_grid_set_row_spacing( (GtkGrid*)grid, 2 );
 	gtk_grid_set_column_spacing( (GtkGrid*)grid, 2 );
-	//gtk_grid_set_column_homogeneous( (GtkGrid*)grid, TRUE );
+	gtk_grid_set_column_homogeneous( (GtkGrid*)grid, TRUE );
 	gtk_grid_set_row_homogeneous( (GtkGrid*)grid, TRUE );
 	//estas dos lineas lo hacen adaptable a la pantalla, las celdas
 	//siempre tendran el mismo tamaño entre si
@@ -57,29 +59,33 @@ int main (int argc, char *argv[]) {
     return 0;
 }
 
-static void update_cell( GtkWidget* widget, int* data ){
-	label_new = "";
-	label_new = g_strconcat( label_new, gtk_entry_get_text( (GtkEntry*)widget ), NULL );
-	gtk_button_set_label( (GtkButton*)celda[location[0]][location[1]], label_new );
-	label_new = "";
-	g_printf( "%s\n", label_new );
+static void update_cell( GtkWidget* widget, GdkEventKey* event, int* data ){
+	if( event->keyval == GDK_KEY_Return ){ //detecta si el key es enter
+		label_new = "";
+		label_new = g_strconcat( label_new, gtk_entry_get_text( (GtkEntry*)widget ), NULL );
+		//concatena la cadena, aqui debera estar la funcion de parsear
+		gtk_button_set_label( (GtkButton*)celda[location[0]][location[1]], label_new );
+		label_new = ""; //regresamos la cadena a una vacia para no contaminar nuevas celdas
+		gtk_widget_hide( input_window );
+	}
 }
 
 static void button_clicked( GtkWidget* widget, int* data ){
-	GtkWidget* input_window = gtk_window_new( GTK_WINDOW_TOPLEVEL );
+	input_window = gtk_window_new( GTK_WINDOW_TOPLEVEL );
+	gtk_window_set_title( (GtkWindow*)input_window, "Ingrese un valor!" );
+	gtk_window_set_default_size( (GtkWindow*)input_window, 300, 50 );
 	gtk_container_set_border_width( (GtkContainer*)input_window, 10 );
 	GtkWidget* box = gtk_box_new( FALSE, 0 );
 	gtk_container_add( (GtkContainer*)input_window, box );
 	GtkEntryBuffer* buffer = gtk_entry_buffer_new( NULL, -1 );
 	GtkWidget* input = gtk_entry_new();
 	gtk_entry_set_buffer( (GtkEntry*)input, buffer );
-	gtk_entry_set_icon_from_icon_name( (GtkEntry*)input, GTK_ENTRY_ICON_PRIMARY, "edit-paste" );
 	gtk_box_pack_start( GTK_BOX( box ), input, TRUE, TRUE, 5 );
 	gtk_button_set_label( (GtkButton*)widget, label_new );
 	location[0] = data[0];
 	location[1] = data[1];
 	g_printf( "%d, %d numero", location[0], location[1] );
-	g_signal_connect( input, "icon-press", G_CALLBACK( update_cell ), data );
+	g_signal_connect_after( input, "key_release_event", G_CALLBACK( update_cell ), NULL );
 	gtk_widget_show_all( input_window );
 }
 
