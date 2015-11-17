@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "mathParser.c"
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <gdk/gdkkeysyms.h>
@@ -64,6 +65,7 @@ static void update_cell( GtkWidget* widget, GdkEventKey* event, int* data ){
 		label_new = "";
 		label_new = g_strconcat( label_new, gtk_entry_get_text( (GtkEntry*)widget ), NULL );
 		//concatena la cadena, aqui debera estar la funcion de parsear
+		label_new = calculate( label_new );
 		gtk_button_set_label( (GtkButton*)celda[location[0]][location[1]], label_new );
 		label_new = ""; //regresamos la cadena a una vacia para no contaminar nuevas celdas
 		gtk_widget_hide( input_window );

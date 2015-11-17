@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
@@ -18,7 +18,7 @@ typedef struct node2{
 }operator;
 
 char* isOperator(char);
-float calculate(char *);
+char* calculate(char *);
 void separate(char *, char *);
 void toPostfix(char *, char *);
 int priority(char);
@@ -33,35 +33,41 @@ int factorial(int);
 
 char *operators = "*-+/!()^s?";
 
-int main(int argc, char const *argv[]){
-	
-	char *string = NULL;
-	float result = 0.0;
+//descomentar para debugear el parser!
 
-	string = (char*)malloc(sizeof(char)*MAX);
-
-	printf("Submit your infix expresion: \n");
-	scanf("%s",string);
-	result = calculate(string);
-	printf("%.2f\n",result);
-	
-	free(string);
-
-	return 0;
-}
+//int main_math(int argc, char const *argv[]){ //nombrar math para probar independientemente
+//	
+//	char *string = NULL;
+//	char *result = malloc( MAX );
+//
+//	string = (char*)malloc(sizeof(char)*MAX);
+//
+//	printf("Submit your infix expresion: \n");
+//	scanf("%s",string);
+//	result = calculate(string);
+//	printf("%s\n",result);
+//	
+//	free(string);
+//
+//	return 0;
+//}
 
 char* isOperator(char character){
 	return strchr(operators, character);
 }
 
-float calculate(char string[MAX]){
+char* calculate(char string[MAX]){
 	
 	char separated[MAX], postfix[MAX];
-	
+	char* result_str = malloc( MAX );
+	float result;
 	separate(string, separated);
 	toPostfix(separated, postfix);
 	
-	evaluateExpresion(postfix);
+	result = evaluateExpresion(postfix);
+	sprintf( result_str, "%3.2f", result );
+	return result_str;
+
 }
 
 void separate(char original[MAX], char separated[MAX]){
