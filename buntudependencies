@@ -7,3 +7,12 @@ siguientes paquetes
 Dependencias de arch
 
 - gtk3 ( ya viene pre-instalado )
+
+Instrucciones de git:
+	cuando querras pushear un archivo a la master sin tocar lo demas
+	git add ./filename
+	git commit -m "aniadiendo archivo"
+	git push origin branch:master
+esto aplica para cualquier situacion
+
+luego actualizan la branch normalmente
