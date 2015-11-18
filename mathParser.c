@@ -225,7 +225,7 @@ void popOperand(operand **head){
 
 float evaluateExpresion(char string[MAX]){
 	char *aux = NULL, space[2] = " ";
-	operator * operators = NULL;
+	//operator * operators = NULL; //calla al compilador
 	operand * operands = NULL;
 	float temp;
 

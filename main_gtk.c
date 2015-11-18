@@ -83,11 +83,12 @@ static void button_clicked( GtkWidget* widget, int* data ){
 	GtkWidget* input = gtk_entry_new();
 	gtk_entry_set_buffer( (GtkEntry*)input, buffer );
 	gtk_box_pack_start( GTK_BOX( box ), input, TRUE, TRUE, 5 );
-	gtk_button_set_label( (GtkButton*)widget, label_new );
+	const gchar* temp = gtk_button_get_label( (GtkButton*)widget );
+	gtk_entry_set_text( (GtkEntry*)input, temp );
 	location[0] = data[0];
 	location[1] = data[1];
-	g_printf( "%d, %d numero", location[0], location[1] );
 	g_signal_connect_after( input, "key_release_event", G_CALLBACK( update_cell ), NULL );
+	g_printf( "celda %d, %d\n", location[0], location[1] );
 	gtk_widget_show_all( input_window );
 }
 
@@ -149,7 +150,7 @@ void fill_grid( GtkWidget*** celda, gchar*** label, GtkWidget* grid, GtkWidget* 
 	}
 	for( i = 0; i < y; i++ ){
 		for( j = 0; j < x; j++ ){
-			label[j][i] = NULL;
+			label[j][i] = ""; //para callar el error de label IS NULL
 			celda[j][i] = gtk_button_new_with_label( label[j][i] );
 			gtk_grid_attach( (GtkGrid*)grid, celda[j][i], 2 + j, 2 + i, 1, 1 );
 			location_array[j][i] = malloc( sizeof( int ) * 2 );
