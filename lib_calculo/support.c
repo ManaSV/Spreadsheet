@@ -2,14 +2,14 @@
  * LIBRERIAS PARA DESGLOSAR MAS EL CONTENIDO DEL PROGRAMA           *
  * FUNCIONES PARA EL ENLACAMIENTO Y RECORRIDO DE LA HOJA DE CALCULO *
  ********************************************************************/
+//MAX esta definido en mathParcer y es 60.
 
 void establecer_fila( struct nodo** cab, int fil, int i, struct nodo* inicio ){
 	struct nodo* nuevo = malloc( sizeof( struct nodo ) );
 	if( fil ){
-		nuevo->dato = malloc( sizeof( int ) );
-		*((int*)nuevo->dato) = i + 1;
 		nuevo->fila = i + 1;
-		nuevo->flag = NUMERO;
+		nuevo->dato = malloc( MAX );
+		sprintf( nuevo->dato, "%d", nuevo->fila );
 		(*cab)->abajo = nuevo;
 		(*cab)->abajo->derecha = (*cab)->abajo;
 		establecer_fila( &(*cab)->abajo, fil - 1, i + 1, inicio );
@@ -21,10 +21,9 @@ void establecer_fila( struct nodo** cab, int fil, int i, struct nodo* inicio ){
 void establecer_columna( struct nodo** cab, int col, int j, struct nodo* inicio ){
 	struct nodo* nuevo = malloc( sizeof( struct nodo ) );
 	if( col ){
-		nuevo->dato = malloc( sizeof( char ) );
-		*((char*)nuevo->dato) = 'A' + j;
 		nuevo->columna = 'A' + j;
-		nuevo->flag = LETRA;
+		nuevo->dato = malloc( MAX );
+		sprintf( nuevo->dato, "%c", nuevo->columna );
 		(*cab)->derecha = nuevo;
 		(*cab)->derecha->abajo = (*cab)->derecha;
 		establecer_columna( &(*cab)->derecha, col - 1, j + 1, inicio );
@@ -80,6 +79,7 @@ int encontrar_columna( char col, int fil, struct nodo** cab, struct nodo* inicio
 		}else
 			return 1;
 	}
+	return 0; //error
 }
 
 void borrar_fila( char col, int fil, struct nodo** cab, struct nodo* inicio ){
@@ -128,6 +128,7 @@ struct nodo* retornar_columna( char col, int fil, struct nodo** cab, struct nodo
 		}else
 			return (*cab);
 	}
+	return NULL; //error
 }
 
 struct nodo* retornar_fila( char col, int fil, struct nodo** cab, struct nodo* inicio ){
@@ -142,5 +143,6 @@ struct nodo* retornar_fila( char col, int fil, struct nodo** cab, struct nodo* i
 		}else
 			return (*cab);
 	}
+	return NULL;
 }
 
