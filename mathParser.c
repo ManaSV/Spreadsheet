@@ -29,6 +29,7 @@ void popOperand(operand **);
 float evaluateExpresion(char *);
 int testParenthesis(char *);
 void operate(char, float, operand**);
+//Operaciones
 int factorial(int);
 
 char *operators = "*-+/!()^s?";
