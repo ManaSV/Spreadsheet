@@ -68,18 +68,41 @@ void insertar_fila( int fil, struct nodo** cab, struct nodo* inicio, struct nodo
 }
 
 int encontrar_columna( char col, int fil, struct nodo** cab, struct nodo* inicio ){
-	if( (*cab)->columna < col ){
-		encontrar_columna( col, fil, &(*cab)->derecha, inicio->derecha  );
-	}else{ 
-		if( (*cab)->fila < fil ){
-			if( (*cab)->abajo == inicio )
-				return 0;
-			else
-				encontrar_columna( col, fil, &(*cab)->abajo, inicio );
-		}else
-			return 1;
-	}
-	return 0; //error
+	if( (*cab)->columna > col )
+		return 0;
+	else if( (*cab)->columna == col )
+		return 1;
+	else if( (*cab)->columna < col && (*cab)->derecha != inicio )
+		encontrar_columna( col, fil, &(*cab)->derecha, inicio );
+	else if( (*cab)->derecha == inicio )
+		return 0;
+}
+
+int encontrar_fila( char col, int fil, struct nodo** cab, struct nodo* inicio ){
+	if( (*cab)->fila < fil && (*cab)->abajo != inicio ){
+		encontrar_fila( col, fil, &(*cab)->abajo, (*cab)->abajo  );
+	}else if( (*cab)->derecha == inicio )
+		return 0;
+	else
+		return encontrar_columna( col, fil, &(*cab)->derecha, inicio );
+}
+
+
+/*NOTAS DEL BUG DE NO PODER INSERTAR EN FILA 0****************
+ * Este bug era causado por que al usar encontrar_fila()     *
+ * le mandaba como argumento la fila 1 de la hoja como un    *
+ * argumento, y el nodo inicial de la hoja como argumento    *
+ * padre, entonces cab->derecha jamas iba ser igual a inicio *
+ * causando un core dumped en la primera fila.               *
+ * si existe un nuevo bug, verificar la posibilidad de que   *
+ * el auxiliar de inicio este mal colocado                   *
+ * ***********************************************************/
+
+int encontrar_celda( char col, int fil, struct nodo** cab, struct nodo* inicio ){
+	if( encontrar_fila( col, fil, cab, inicio )
+		return 1;
+	else
+		return 0;
 }
 
 void borrar_fila( char col, int fil, struct nodo** cab, struct nodo* inicio ){
@@ -128,7 +151,6 @@ struct nodo* retornar_columna( char col, int fil, struct nodo** cab, struct nodo
 		}else
 			return (*cab);
 	}
-	return NULL; //error
 }
 
 struct nodo* retornar_fila( char col, int fil, struct nodo** cab, struct nodo* inicio ){
@@ -143,6 +165,5 @@ struct nodo* retornar_fila( char col, int fil, struct nodo** cab, struct nodo* i
 		}else
 			return (*cab);
 	}
-	return NULL;
 }
 

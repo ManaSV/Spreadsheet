@@ -66,7 +66,7 @@ int main (int argc, char *argv[]) {
 
 void init_hoja( int x, int y ){
 	hoja1 = malloc( sizeof( struct nodo ) );
-	hoja1->dato = "";
+	hoja1->dato = "0";
 	establecer_hoja( &hoja1, y, x, 0, 0, hoja1 );
 	mostrar_hoja( &hoja1, hoja1, hoja1, 'A' );
 }
@@ -78,6 +78,8 @@ static void update_cell( GtkWidget* widget, GdkEventKey* event, int* data ){
 		//concatena la cadena, aqui debera estar la funcion de parsear
 		label_new = calculate( label_new );
 		gtk_button_set_label( (GtkButton*)celda[location[0]][location[1]], label_new );
+		insertar_celda( 'A' + location[0], location[1] + 1, &hoja1, hoja1, label_new );
+		mostrar_hoja( &hoja1, hoja1, hoja1, 'A' );
 		label_new = ""; //regresamos la cadena a una vacia para no contaminar nuevas celdas
 		gtk_widget_hide( input_window );
 	}
@@ -98,6 +100,7 @@ static void button_clicked( GtkWidget* widget, int* data ){
 	gtk_entry_set_text( (GtkEntry*)input, temp );
 	location[0] = data[0];
 	location[1] = data[1];
+	borrar_celda( 'A' + location[0], location[1] + 1, &hoja1, hoja1 );
 	g_signal_connect_after( input, "key_release_event", G_CALLBACK( update_cell ), NULL );
 	g_printf( "celda %d, %d\n", location[0], location[1] );
 	gtk_widget_show_all( input_window );

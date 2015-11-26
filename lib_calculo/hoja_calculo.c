@@ -101,6 +101,7 @@ int menu(){
 
 struct nodo* crear_celda( char* data_string ){
 	struct nodo* nuevo = malloc( sizeof( struct nodo ) );
+	nuevo->dato = malloc( MAX );
 	nuevo->dato = data_string;
 	return nuevo;
 }
@@ -119,7 +120,7 @@ void insertar_celda( char col, int fil, struct nodo** cab, struct nodo* inicio, 
 }
 
 void borrar_celda( char col, int fil, struct nodo** cab, struct nodo* inicio ){
-	if( encontrar_columna( col, fil, cab, *cab )  ){
+	if( encontrar_celda( col, fil, cab, inicio ) ){
 		borrar_fila( col, fil, &(*cab)->abajo, inicio );
 		borrar_columna( col, fil, &(*cab)->derecha, inicio );
 	}else
@@ -128,11 +129,11 @@ void borrar_celda( char col, int fil, struct nodo** cab, struct nodo* inicio ){
 
 void intercambiar_celdas( struct nodo** cab1, struct nodo** cab2, struct nodo* init, int x1, int y1, int x2, int y2 ){
 	struct nodo *aux, *aux2;
-	if( !encontrar_columna( 'A' + x1, y1 + 1, cab1, *cab1 ) )
+	if( !encontrar_fila( 'A' + x1, y1 + 1, cab1, *cab1 ) )
 		exit(1);
 	y1++; //para poder ingresar 0, el programa toma 1 como la fila 0
 	//razon de este bug desconocida
-	if( !encontrar_columna( 'A' + x1, y2 + 1, cab2, *cab2 ) )
+	if( !encontrar_fila( 'A' + x1, y2 + 1, cab2, *cab2 ) )
 		exit(1);
 	y2++;
 	if( x1 == x2 && y1 == y2 )
@@ -152,12 +153,12 @@ void intercambiar_celdas( struct nodo** cab1, struct nodo** cab2, struct nodo* i
 }
 
 void mostrar_hoja( struct nodo** cab, struct nodo* iniciox, struct nodo* inicioy, char cont ){
-	if( (*cab)->fila== 0 && (*cab)->columna == 0 )
+	if( (*cab)->fila == 0 && (*cab)->columna == 0 )
 		printf("%5s|", "");
 	for( /*empty*/;cont < (*cab)->derecha->columna; cont++ )
-		printf( "%5s|","" );
+		printf( "%7s|","" );
 	if( (*cab)->derecha != iniciox ){
-		printf( "%4s |", (*cab)->derecha->dato );
+		printf( "%7s|", (*cab)->derecha->dato );
 		mostrar_hoja( &(*cab)->derecha, iniciox, inicioy, cont + 1 );
 	}else if( (*cab)->derecha->abajo != inicioy ){
 		printf( "\n ----\n|%3s |", (*cab)->derecha->dato );
