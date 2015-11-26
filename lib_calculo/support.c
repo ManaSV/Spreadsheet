@@ -99,7 +99,7 @@ int encontrar_fila( char col, int fil, struct nodo** cab, struct nodo* inicio ){
  * ***********************************************************/
 
 int encontrar_celda( char col, int fil, struct nodo** cab, struct nodo* inicio ){
-	if( encontrar_fila( col, fil, cab, inicio )
+	if( encontrar_fila( col, fil, cab, inicio ) )
 		return 1;
 	else
 		return 0;
