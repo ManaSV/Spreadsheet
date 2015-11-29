@@ -29,6 +29,7 @@ void popOperand(operand **);
 float evaluateExpresion(char *);
 int testParenthesis(char *);
 void operate(char, float, operand**);
+//Operaciones
 int factorial(int);
 
 char *operators = "*-+/!()^s?";
@@ -58,16 +59,24 @@ char* isOperator(char character){
 
 char* calculate(char string[MAX]){
 	
-	char separated[MAX], postfix[MAX];
-	char* result_str = malloc( MAX );
-	float result;
-	separate(string, separated);
-	toPostfix(separated, postfix);
+	if(string[0] == '='){
 	
-	result = evaluateExpresion(postfix);
-	sprintf( result_str, "%3.2f", result );
-	return result_str;
+		char separated[MAX], postfix[MAX], *newString = NULL;
+		char* result_str = malloc( MAX );
+		float result;
 
+		newString = strtok(string,"=");
+		separate(newString, separated);
+		toPostfix(separated, postfix);
+
+		result = evaluateExpresion(postfix);
+		sprintf( result_str, "%3.2f", result );
+		
+		return result_str;
+	}
+	
+	else
+		return string;
 }
 
 void separate(char original[MAX], char separated[MAX]){
@@ -225,7 +234,7 @@ void popOperand(operand **head){
 
 float evaluateExpresion(char string[MAX]){
 	char *aux = NULL, space[2] = " ";
-	operator * operators = NULL;
+	//operator * operators = NULL; //calla al compilador
 	operand * operands = NULL;
 	float temp;
 

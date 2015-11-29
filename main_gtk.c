@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "mathParser.c"
+#include "./lib_calculo/hoja_calculo.c"
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <gdk/gdkkeysyms.h>
@@ -8,6 +9,7 @@
 
 enum tipo{ FILA, COLUMNA };
 
+void init_hoja( int x, int y );
 static void button_clicked( GtkWidget* widget, int* data );
 void set_label_number( gchar** string, int x );
 void set_guide( GtkWidget** button, gchar** label, GtkWidget* grid, int lim, int flag );
@@ -15,6 +17,7 @@ GtkWidget*** set_cells( int x, int y, gchar*** content );
 void fill_grid( GtkWidget*** celda, gchar*** content, GtkWidget* grid, GtkWidget* window ,int x, int y );
 static void update_cell( GtkWidget* window, GdkEventKey* event, int* data );
 
+struct nodo* hoja1;
 gchar* label_new; //aqui se guardara el label escrito
 GtkWidget*** celda; //aqui estan las celdas declaradas globalmente
 int*** location_array; //aqui estan las localizaciones con su boton respectivo
@@ -23,12 +26,13 @@ int* location; // aqui se encuentra una localizacion concreta que se
 GtkWidget* input_window;
 
 int main (int argc, char *argv[]) {
-	gtk_init (&argc, &argv);
-	gint x, y;
+	int x, y;
 	printf( "INGRESE NUMERO DE COLUMNAS: " );
 	scanf( "%d", &x );
 	printf( "INGRESE NUMERO DE FILAS: " );
 	scanf( "%d", &y );
+	init_hoja( x, y );
+	gtk_init (&argc, &argv);
 	location = malloc( sizeof(int) * 2 );
 	GtkWidget* window = gtk_window_new( GTK_WINDOW_TOPLEVEL );
 	GtkWidget* grid = gtk_grid_new();
@@ -60,6 +64,13 @@ int main (int argc, char *argv[]) {
     return 0;
 }
 
+void init_hoja( int x, int y ){
+	hoja1 = malloc( sizeof( struct nodo ) );
+	hoja1->dato = "";
+	establecer_hoja( &hoja1, y, x, 0, 0, hoja1 );
+	mostrar_hoja( &hoja1, hoja1, hoja1, 'A' );
+}
+
 static void update_cell( GtkWidget* widget, GdkEventKey* event, int* data ){
 	if( event->keyval == GDK_KEY_Return ){ //detecta si el key es enter
 		label_new = "";
@@ -83,11 +94,12 @@ static void button_clicked( GtkWidget* widget, int* data ){
 	GtkWidget* input = gtk_entry_new();
 	gtk_entry_set_buffer( (GtkEntry*)input, buffer );
 	gtk_box_pack_start( GTK_BOX( box ), input, TRUE, TRUE, 5 );
-	gtk_button_set_label( (GtkButton*)widget, label_new );
+	const gchar* temp = gtk_button_get_label( (GtkButton*)widget );
+	gtk_entry_set_text( (GtkEntry*)input, temp );
 	location[0] = data[0];
 	location[1] = data[1];
-	g_printf( "%d, %d numero", location[0], location[1] );
 	g_signal_connect_after( input, "key_release_event", G_CALLBACK( update_cell ), NULL );
+	g_printf( "celda %d, %d\n", location[0], location[1] );
 	gtk_widget_show_all( input_window );
 }
 
@@ -149,7 +161,7 @@ void fill_grid( GtkWidget*** celda, gchar*** label, GtkWidget* grid, GtkWidget* 
 	}
 	for( i = 0; i < y; i++ ){
 		for( j = 0; j < x; j++ ){
-			label[j][i] = NULL;
+			label[j][i] = ""; //para callar el error de label IS NULL
 			celda[j][i] = gtk_button_new_with_label( label[j][i] );
 			gtk_grid_attach( (GtkGrid*)grid, celda[j][i], 2 + j, 2 + i, 1, 1 );
 			location_array[j][i] = malloc( sizeof( int ) * 2 );
