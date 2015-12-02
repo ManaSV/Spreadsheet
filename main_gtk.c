@@ -11,6 +11,7 @@ enum tipo{ FILA, COLUMNA };
 
 void init_hoja( int x, int y );
 static void button_clicked( GtkWidget* widget, int* data );
+static void enter_command( GtkWidget* widget );
 void set_label_number( gchar** string, int x );
 void set_guide( GtkWidget** button, gchar** label, GtkWidget* grid, int lim, int flag );
 GtkWidget*** set_cells( int x, int y, gchar*** content );
@@ -19,6 +20,7 @@ static void update_cell( GtkWidget* window, GdkEventKey* event, int* data );
 
 struct nodo* hoja1;
 gchar* label_new; //aqui se guardara el label escrito
+gchar* command;
 GtkWidget*** celda; //aqui estan las celdas declaradas globalmente
 int*** location_array; //aqui estan las localizaciones con su boton respectivo
 int* location; // aqui se encuentra una localizacion concreta que se
@@ -40,6 +42,10 @@ int main (int argc, char *argv[]) {
 	gchar** y_label = malloc( sizeof( gchar* ) * y );
 	GtkWidget** buttonx = malloc( sizeof( GtkWidget* ) * x );
 	GtkWidget** buttony = malloc( sizeof( GtkWidget* ) * y );
+	GtkWidget* button_command = gtk_button_new_with_label( "CMD" );
+	g_signal_connect( button_command, "clicked", G_CALLBACK( enter_command ), NULL );
+	//este es el boton para los comandos, en el espacio 1, 1
+	gtk_grid_attach( (GtkGrid*)grid, button_command, 1, 1, 1, 1 );
 	//con estos dos for establezco una fila y una columna de botones
 	//cuyo rango puede variar de 1 - 99
 	set_guide( buttonx, x_label, grid, x, COLUMNA );
@@ -69,6 +75,37 @@ void init_hoja( int x, int y ){
 	hoja1->dato = "0";
 	establecer_hoja( &hoja1, y, x, 0, 0, hoja1 );
 	mostrar_hoja( &hoja1, hoja1, hoja1, 'A' );
+}
+
+
+static void execute_command( GtkWidget* widget, GdkEventKey* event ){
+	if( event->keyval == GDK_KEY_Return ){ //detecta si el key es enter
+		int coordinates[4];
+		command = "";
+		command = g_strconcat( command, gtk_entry_get_text( (GtkEntry*)widget ), NULL );
+		//concatena la cadena, aqui debera estar la funcion de parsear
+//		label_new = calculate( label_new );
+//		gtk_button_set_label( (GtkButton*)celda[location[0]][location[1]], label_new );
+//		insertar_celda( 'A' + location[0], location[1] + 1, &hoja1, hoja1, label_new );
+		mostrar_hoja( &hoja1, hoja1, hoja1, 'A' );
+		command = ""; //regresamos la cadena a una vacia para no contaminar nuevas celdas
+		gtk_widget_hide( input_window );
+	}
+}
+
+static void enter_command( GtkWidget* widget ){
+	input_window = gtk_window_new( GTK_WINDOW_TOPLEVEL );
+	gtk_window_set_title( (GtkWindow*)input_window, "Ingrese un comando!" );
+	gtk_window_set_default_size( (GtkWindow*)input_window, 300, 50 );
+	gtk_container_set_border_width( (GtkContainer*)input_window, 10 );
+	GtkWidget* box = gtk_box_new( FALSE, 0 );
+	gtk_container_add( (GtkContainer*)input_window, box );
+	GtkEntryBuffer* buffer = gtk_entry_buffer_new( NULL, -1 );
+	GtkWidget* input = gtk_entry_new();
+	gtk_entry_set_buffer( (GtkEntry*)input, buffer );
+	gtk_box_pack_start( GTK_BOX( box ), input, TRUE, TRUE, 5 );
+	g_signal_connect_after( input, "key_release_event", G_CALLBACK( execute_command ), NULL );
+	gtk_widget_show_all( input_window );
 }
 
 static void update_cell( GtkWidget* widget, GdkEventKey* event, int* data ){
