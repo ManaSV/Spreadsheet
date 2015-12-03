@@ -11,7 +11,11 @@ int main(int argc, char const *argv[]){
 	strcat(string,"(10,20)->(33,44)");
 	printf( "%s\n", string );
 	
-	sscanf(string,"(%d,%d)->(%d,%d)",&array[0],&array[1],&array[2],&array[3]);
+	if( (sscanf(string,"(%d,%d)->(%d,%d)",&array[0],&array[1],&array[2],&array[3])) == 4)
+		printf("true\n");
+	else
+		printf("false\n");
+
 	
 	printf("Mover de (%d,%d) Hasta (%d,%d)\n",array[0],array[1],array[2],array[3]);
 	
