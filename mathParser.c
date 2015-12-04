@@ -32,7 +32,7 @@ void operate(char, float, operand**);
 //Operaciones
 int factorial(int);
 
-char *operators = "*-+/!()^qsct?";
+char *operators = "*-+/!()^s?";
 
 //descomentar para debugear el parser!
 
@@ -93,25 +93,11 @@ void separate(char original[MAX], char separated[MAX]){
 			}
 
 			else{
+				separated[j++] = original[i];
+
 				if(original[i]=='s'){
 					if(original[i+1] == 'q')
-						separated[j++] = 'q';
 						i+=3; //From now on we ignore the remaining cause we'll eval sqrt
-				}
-
-				if(original[i]== 's'){
-					separated[j++] = original[i];
-					i+=2; //sin
-				}
-
-				if(original[i]== 'c'){
-					separated[j++] = original[i];
-					i+=2; //sin
-				}
-
-				if(original[i]== 't'){
-					separated[j++] = original[i];
-					i+=2; //tan
 				}
 			}
 			
@@ -185,7 +171,7 @@ int priority(char operator) {
 	switch (operator) {
 		case '+': case '-': return 1;
 		case '*': case '/': return 2;
-		case '^': case '!': case 's': case '?': case 'q': case 'c': case 't':return 3;
+		case '^': case '!': case 's': case '?':return 3;
 		case '(': return 0;
 	}
 }
@@ -305,17 +291,8 @@ int testParenthesis(char string[MAX]){
 			case '!':
 			pushOperand(head, factorial((int)op1));
 			break;
-			case 'q': 
-			pushOperand(head, sqrt((int)op1));
-			break;
 			case 's': 
-			pushOperand(head, sin((double)op1));
-			break;
-			case 'c': 
-			pushOperand(head, cos((double)op1));
-			break;
-			case 't': 
-			pushOperand(head, tan((double)op1));
+			pushOperand(head, sqrt((int)op1));
 			break;
 			case '?':
 			pushOperand(head, op1*-1);
