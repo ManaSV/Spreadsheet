@@ -6,7 +6,7 @@
 #define MAX 60
 
 typedef struct node{
-	float number;
+	double number;
 	struct node *next;
 	struct node *previous;
 }operand;
@@ -23,12 +23,12 @@ void separate(char *, char *);
 void toPostfix(char *, char *);
 int priority(char);
 void pushOperator(operator **, char);
-void pushOperand(operand **, float);
+void pushOperand(operand **, double);
 void popOperator(operator **);
 void popOperand(operand **);
-float evaluateExpresion(char *);
+double evaluateExpresion(char *);
 int testParenthesis(char *);
-void operate(char, float, operand**);
+void operate(char, double, operand**);
 //Operaciones
 int factorial(int);
 
@@ -63,7 +63,7 @@ char* calculate(char string[MAX]){
 	
 		char separated[MAX], postfix[MAX], *newString = NULL;
 		char* result_str = malloc( MAX );
-		float result;
+		double result;
 
 		newString = strtok(string,"=");
 		separate(newString, separated);
@@ -205,7 +205,7 @@ void pushOperator(operator **head, char character){
 	}
 }
 
-void pushOperand(operand **head, float num){
+void pushOperand(operand **head, double num){
 	operand *new = (operand *)malloc(sizeof(operand));
 	new->number = num;
 	new->previous = NULL;
@@ -245,11 +245,11 @@ void popOperand(operand **head){
 	}
 }
 
-float evaluateExpresion(char string[MAX]){
+double evaluateExpresion(char string[MAX]){
 	char *aux = NULL, space[2] = " ";
 	//operator * operators = NULL; //calla al compilador
 	operand * operands = NULL;
-	float temp;
+	double temp;
 
 	aux = strtok(string, space);	
 	do{
@@ -284,7 +284,7 @@ int testParenthesis(char string[MAX]){
 		return 0;
 }
 
-void operate(char character, float op1, operand** head){
+void operate(char character, double op1, operand** head){
 	switch(character){
 		case '+':
 			(*head)->number += op1;
