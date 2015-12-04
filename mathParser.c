@@ -1,4 +1,4 @@
-//#include <stdio.h>
+#include <stdio.h>
 //#include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -32,7 +32,7 @@ void operate(char, float, operand**);
 //Operaciones
 int factorial(int);
 
-char *operators = "*-+/!()^s?";
+char *operators = "*-+/!()^q?sct";
 
 //descomentar para debugear el parser!
 
@@ -95,9 +95,20 @@ void separate(char original[MAX], char separated[MAX]){
 			else{
 				separated[j++] = original[i];
 
-				if(original[i]=='s'){
-					if(original[i+1] == 'q')
-						i+=3; //From now on we ignore the remaining cause we'll eval sqrt
+				if(original[i]== 's' && original[i+1] == 'i' && original[i+2] == 'n'){
+						i+=2;
+				}
+
+				else if(original[i]== 'c'){
+					i+=2;
+				}
+				else if(original[i]== 't'){
+					i+=2; 
+				}
+
+				else if(original[i]== 's' && original[i+1] == 'q' && original[i+2] == 'r' && original[i+3] == 't' ){
+						i+=3;
+						separated[j-1]= 'q';
 				}
 			}
 			
@@ -127,51 +138,53 @@ void toPostfix(char string[MAX], char postfix[MAX]){
 				case '(':
 					pushOperator(&stack , aux[0]);
 					break;
-					case ')':
-while ( stack->character != '(' ) {
-	postfix[i++] = stack->character;
-	postfix[i++] = ' ';
-	popOperator(&stack);
-}
-popOperator(&stack);
-break;
-default:
+				case ')':
+					while ( stack->character != '(' ) {
+						postfix[i++] = stack->character;
+						postfix[i++] = ' ';
+						popOperator(&stack);
+					}
+					popOperator(&stack);
+					break;
+				default:
+					while(stack && priority(aux[0]) < priority(stack->character)){
+						postfix[i++] = stack->character;
+						postfix[i++] = ' ';
+						popOperator(&stack);
+					}
+					pushOperator(&stack, aux[0]);
+					break;
+			}
+		}
+		else{	
+			postfix[i++] = '\0';
 
-while(stack && priority(aux[0]) < priority(stack->character)){
-	postfix[i++] = stack->character;
-	postfix[i++] = ' ';
-	popOperator(&stack);
-}
-pushOperator(&stack, aux[0]);
-break;
-}
-}
-else{	
-	postfix[i++] = '\0';
+			if(aux[0]== 'e')
+				strcat(postfix, "2.7182818");
+			else if(aux[0] == 'p' && aux[1] == 'i')
+				strcat(postfix, "3.141592653589793");
+			else
+				strcat(postfix, aux);
 
-	if(aux[0]== 'e')
-		strcat(postfix, "2.7182818");
-	else
-		strcat(postfix, aux);
+			strcat(postfix, " ");
+			i = strlen(postfix);
+		}
+	
+	}while((aux = strtok(NULL, " ")) !=NULL);
 
-	strcat(postfix, " ");
-	i = strlen(postfix);
-}
-}while((aux = strtok(NULL, " ")) !=NULL);
-
-while( stack ) {
-	postfix[i++] = stack->character;
-	postfix[i++] = ' ';
-	popOperator(&stack);
-}
-postfix[i] = '\0';
+	while( stack ) {
+		postfix[i++] = stack->character;
+		postfix[i++] = ' ';
+		popOperator(&stack);
+	}
+	postfix[i] = '\0';
 }
 
 int priority(char operator) {
 	switch (operator) {
 		case '+': case '-': return 1;
 		case '*': case '/': return 2;
-		case '^': case '!': case 's': case '?':return 3;
+		case '^': case '!': case 's': case '?': case 't': case 'c': case 'q': return 3;
 		case '(': return 0;
 	}
 }
@@ -291,8 +304,17 @@ void operate(char character, float op1, operand** head){
 		case '!':
 			pushOperand(head, factorial((int)op1));
 			break;
-		case 's': 
+		case 'q': 
 			pushOperand(head, sqrt((int)op1));
+			break;
+		case 't': 
+			pushOperand(head, tan((double)op1));
+			break;
+		case 'c': 
+			pushOperand(head, cos((double)op1));
+			break;
+		case 's': 
+			pushOperand(head, sin((double)op1));
 			break;
 		case '?':
 			pushOperand(head, op1*-1);
