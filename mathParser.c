@@ -60,7 +60,7 @@ char* isOperator(char character){
 char* calculate(char string[MAX]){
 	
 	if(string[0] == '='){
-	
+
 		char separated[MAX], postfix[MAX], *newString = NULL;
 		char* result_str = malloc( MAX );
 		float result;
@@ -146,7 +146,7 @@ pushOperator(&stack, aux[0]);
 break;
 }
 }
-else{	
+else{
 	postfix[i++] = '\0';
 
 	if(aux[0]== 'e')
@@ -265,44 +265,44 @@ int testParenthesis(char string[MAX]){
 			if(string[i] == ')')
 				counter--;
 		}
-	if(counter == 0)
-		return 1;
-	else
-		return 0;
-}
+		if(counter == 0)
+			return 1;
+		else
+			return 0;
+	}
 
-void operate(char character, float op1, operand** head){
-	switch(character){
-		case '+':
+	void operate(char character, float op1, operand** head){
+		switch(character){
+			case '+':
 			(*head)->number += op1;
 			break;
-		case '-':
+			case '-':
 			(*head)->number -= op1;
 			break;
-		case '*':
+			case '*':
 			(*head)->number *= op1;
 			break;
-		case '/':
+			case '/':
 			(*head)->number /= op1;
 			break;
-		case '^':
+			case '^':
 			(*head)->number = pow((*head)->number, op1);
 			break;
-		case '!':
+			case '!':
 			pushOperand(head, factorial((int)op1));
 			break;
-		case 's': 
+			case 's': 
 			pushOperand(head, sqrt((int)op1));
 			break;
-		case '?':
+			case '?':
 			pushOperand(head, op1*-1);
 			break;
+		}
 	}
-}
 
-int factorial(int n){
-	if(n<=1)
-		return 1;
-	else
-		return (n*factorial(n-1));
-}
+	int factorial(int n){
+		if(n<=1)
+			return 1;
+		else
+			return (n*factorial(n-1));
+	}

@@ -127,29 +127,11 @@ void borrar_celda( char col, int fil, struct nodo** cab, struct nodo* inicio ){
 		printf( "La celda seleccionada no tiene ningun contenido\n" );
 }
 
-void intercambiar_celdas( struct nodo** cab1, struct nodo** cab2, struct nodo* init, int x1, int y1, int x2, int y2 ){
-	struct nodo *aux, *aux2;
-	if( !encontrar_fila( 'A' + x1, y1 + 1, cab1, *cab1 ) )
-		exit(1);
-	y1++; //para poder ingresar 0, el programa toma 1 como la fila 0
-	//razon de este bug desconocida
-	if( !encontrar_fila( 'A' + x1, y2 + 1, cab2, *cab2 ) )
-		exit(1);
-	y2++;
-	if( x1 == x2 && y1 == y2 )
-		return;
-	aux = retornar_columna( x1, y1, cab1, *cab1 );
-	borrar_celda( x1, y1, cab1, init );
-	aux->columna = x2 + 'A';
-	aux->fila = y2;
-	aux2 = retornar_columna( 'A' + x2, y2, cab1, *cab1 );
-	borrar_celda( 'A' + x2, y2, cab2, init );
-	aux2->columna = x1 + 'A';
-	aux2->fila = y1;
-	insertar_columna( x2 + 'A', &(*cab1)->derecha, init->derecha, &aux );
-	insertar_fila( y2, &(*cab1)->abajo, init->abajo, &aux );
-	insertar_columna( x1 + 'A', &(*cab2)->derecha, init->derecha, &aux2 );
-	insertar_fila( y1, &(*cab2)->abajo, init->abajo, &aux2 );
+void intercambiar_celdas( struct nodo** cab, int* xy, char* aux1, char* aux2 ){
+	borrar_celda( 'A' + xy[0], xy[1] + 1, cab, *cab );
+	borrar_celda( 'A' + xy[2], xy[3] + 1, cab, *cab );
+	insertar_celda( 'A' + xy[0], xy[1] + 1, cab, *cab, aux2 );
+	insertar_celda( 'A' + xy[2], xy[3] + 1, cab, *cab, aux1 );
 }
 
 void mostrar_hoja( struct nodo** cab, struct nodo* iniciox, struct nodo* inicioy, char cont ){
