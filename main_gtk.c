@@ -42,6 +42,7 @@ int main (int argc, char *argv[]) {
 	gtk_scrolled_window_set_min_content_height( (GtkScrolledWindow*)scroll_window, 200 );
 	gtk_scrolled_window_set_min_content_width( (GtkScrolledWindow*)scroll_window, 200 );
 	GtkWidget* window = gtk_window_new( GTK_WINDOW_TOPLEVEL );
+	gtk_window_set_default_size( (GtkWindow*)window,50*x, 25*y );
 	GtkWidget* grid = gtk_grid_new();
 	gchar** x_label = malloc( sizeof( gchar* ) * x );
 	gchar** y_label = malloc( sizeof( gchar* ) * y );
@@ -84,8 +85,8 @@ void init_hoja( int x, int y ){
 }
 
 int validate_range( int x, int y, int* coor, int length ){
-	for( int i = 0; i < length; i++ ){
-		if( coor[i] > x - 1 || coor[i] > y - 1 )
+	for( int i = 0; i < length - 1; i++ ){
+		if( coor[i] > x - 1 || coor[i + 1] > y - 1 )
 			return 0;
 	}
 	return 1;
@@ -114,8 +115,17 @@ static void execute_command( GtkWidget* widget, GdkEventKey* event ){
 		}	
 		else if( command_parser( command, coordinates ) == 8 && validate_range( x, y, coordinates, 8 )){
 			gtk_widget_hide( input_window );
-		}
-		else{
+		}else if( command_parser( command, coordinates ) == 5 && validate_range( x,y, coordinates, 4 )){
+			aux1 = g_strconcat( aux1, gtk_button_get_label( (GtkButton*)celda[coordinates[0]][coordinates[1]] ), NULL );
+			borrar_celda( 'A' + coordinates[2], coordinates[3] + 1, &hoja1, hoja1 );
+			insertar_celda( 'A' + coordinates[2], coordinates[3] + 1, &hoja1, hoja1, aux1 );
+			gtk_button_set_label( (GtkButton*)celda[coordinates[2]][coordinates[3]], aux1 );
+			gtk_widget_hide( input_window );
+		}else if( command_parser( command, coordinates ) == 2 && validate_range( x,y, coordinates, 2 ) ){
+			gtk_button_set_label( (GtkButton*)celda[coordinates[0]][coordinates[1]], "" );
+			borrar_celda( 'A' + coordinates[0], coordinates[1] + 1, &hoja1, hoja1 );
+			gtk_widget_hide( input_window );
+		}else{
 			g_signal_connect_swapped( dialog, "response", G_CALLBACK( gtk_widget_destroy ), dialog );
 			gtk_dialog_run( (GtkDialog*)dialog );
 		}
