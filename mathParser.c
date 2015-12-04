@@ -138,44 +138,46 @@ void toPostfix(char string[MAX], char postfix[MAX]){
 				case '(':
 					pushOperator(&stack , aux[0]);
 					break;
-					case ')':
-while ( stack->character != '(' ) {
-	postfix[i++] = stack->character;
-	postfix[i++] = ' ';
-	popOperator(&stack);
-}
-popOperator(&stack);
-break;
-default:
+				case ')':
+					while ( stack->character != '(' ) {
+						postfix[i++] = stack->character;
+						postfix[i++] = ' ';
+						popOperator(&stack);
+					}
+					popOperator(&stack);
+					break;
+				default:
+					while(stack && priority(aux[0]) < priority(stack->character)){
+						postfix[i++] = stack->character;
+						postfix[i++] = ' ';
+						popOperator(&stack);
+					}
+					pushOperator(&stack, aux[0]);
+					break;
+			}
+		}
+		else{	
+			postfix[i++] = '\0';
 
-while(stack && priority(aux[0]) < priority(stack->character)){
-	postfix[i++] = stack->character;
-	postfix[i++] = ' ';
-	popOperator(&stack);
-}
-pushOperator(&stack, aux[0]);
-break;
-}
-}
-else{	
-	postfix[i++] = '\0';
+			if(aux[0]== 'e')
+				strcat(postfix, "2.7182818");
+			else if(aux[0] == 'p' && aux[1] == 'i')
+				strcat(postfix, "3.141592653589793");
+			else
+				strcat(postfix, aux);
 
-	if(aux[0]== 'e')
-		strcat(postfix, "2.7182818");
-	else
-		strcat(postfix, aux);
+			strcat(postfix, " ");
+			i = strlen(postfix);
+		}
+	
+	}while((aux = strtok(NULL, " ")) !=NULL);
 
-	strcat(postfix, " ");
-	i = strlen(postfix);
-}
-}while((aux = strtok(NULL, " ")) !=NULL);
-
-while( stack ) {
-	postfix[i++] = stack->character;
-	postfix[i++] = ' ';
-	popOperator(&stack);
-}
-postfix[i] = '\0';
+	while( stack ) {
+		postfix[i++] = stack->character;
+		postfix[i++] = ' ';
+		popOperator(&stack);
+	}
+	postfix[i] = '\0';
 }
 
 int priority(char operator) {
