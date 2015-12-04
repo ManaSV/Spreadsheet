@@ -42,7 +42,7 @@ int main (int argc, char *argv[]) {
 	gtk_scrolled_window_set_min_content_height( (GtkScrolledWindow*)scroll_window, 200 );
 	gtk_scrolled_window_set_min_content_width( (GtkScrolledWindow*)scroll_window, 200 );
 	GtkWidget* window = gtk_window_new( GTK_WINDOW_TOPLEVEL );
-	gtk_window_set_default_size( (GtkWindow*)window,50*x, 25*y );
+	gtk_window_set_default_size( (GtkWindow*)window,60*x + 1, 30*y + 1 );
 	GtkWidget* grid = gtk_grid_new();
 	gchar** x_label = malloc( sizeof( gchar* ) * x );
 	gchar** y_label = malloc( sizeof( gchar* ) * y );
@@ -129,10 +129,8 @@ static void execute_command( GtkWidget* widget, GdkEventKey* event ){
 			g_signal_connect_swapped( dialog, "response", G_CALLBACK( gtk_widget_destroy ), dialog );
 			gtk_dialog_run( (GtkDialog*)dialog );
 		}
-//		insertar_celda( 'A' + location[0], location[1] + 1, &hoja1, hoja1, label_new );
 		mostrar_hoja( &hoja1, hoja1, hoja1, 'A' );
 		command = ""; //regresamos la cadena a una vacia para no contaminar nuevas celdas
-		//gtk_widget_hide( input_window );
 	}
 }
 
