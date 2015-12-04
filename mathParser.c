@@ -1,4 +1,4 @@
-//#include <stdio.h>
+#include <stdio.h>
 //#include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -32,7 +32,7 @@ void operate(char, float, operand**);
 //Operaciones
 int factorial(int);
 
-char *operators = "*-+/!()^s?";
+char *operators = "*-+/!()^q?sct";
 
 //descomentar para debugear el parser!
 
@@ -95,9 +95,20 @@ void separate(char original[MAX], char separated[MAX]){
 			else{
 				separated[j++] = original[i];
 
-				if(original[i]=='s'){
-					if(original[i+1] == 'q')
-						i+=3; //From now on we ignore the remaining cause we'll eval sqrt
+				if(original[i]== 's' && original[i+1] == 'i' && original[i+2] == 'n'){
+						i+=2;
+				}
+
+				else if(original[i]== 'c'){
+					i+=2;
+				}
+				else if(original[i]== 't'){
+					i+=2; 
+				}
+
+				else if(original[i]== 's' && original[i+1] == 'q' && original[i+2] == 'r' && original[i+3] == 't' ){
+						i+=3;
+						separated[j-1]= 'q';
 				}
 			}
 			
@@ -171,7 +182,7 @@ int priority(char operator) {
 	switch (operator) {
 		case '+': case '-': return 1;
 		case '*': case '/': return 2;
-		case '^': case '!': case 's': case '?':return 3;
+		case '^': case '!': case 's': case '?': case 't': case 'c': case 'q': return 3;
 		case '(': return 0;
 	}
 }
@@ -291,8 +302,17 @@ void operate(char character, float op1, operand** head){
 		case '!':
 			pushOperand(head, factorial((int)op1));
 			break;
-		case 's': 
+		case 'q': 
 			pushOperand(head, sqrt((int)op1));
+			break;
+		case 't': 
+			pushOperand(head, tan((double)op1));
+			break;
+		case 'c': 
+			pushOperand(head, cos((double)op1));
+			break;
+		case 's': 
+			pushOperand(head, sin((double)op1));
 			break;
 		case '?':
 			pushOperand(head, op1*-1);
