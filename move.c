@@ -32,6 +32,9 @@ int command_parser( char* string, int* array ){
 		return 4;
 	else if( sscanf( string, "cp %d,%d %d,%d", &array[0],&array[1],&array[2],&array[3] ) == 4 )
 		return 5;
+	else if( sscanf( string, "cp %d,%d:%d,%d %d,%d:%d,%d",  &array[0], &array[1], 
+		&array[2] ,&array[3], &array[4], &array[5], &array[6], &array[7]) == 8 )
+		return 6;
 	else if( sscanf( string, "rm %d,%d", &array[0], &array[1] ) == 2 )
 		return 2;
 	return 0;
