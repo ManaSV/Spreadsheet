@@ -127,6 +127,13 @@ void borrar_celda( char col, int fil, struct nodo** cab, struct nodo* inicio ){
 		printf( "La celda seleccionada no tiene ningun contenido\n" );
 }
 
+void intercambiar_celdas_r( struct nodo** cab, int x1, int y1, int x2, int y2, char* aux1, char* aux2 ){
+	borrar_celda( 'A' + x1, y1 + 1, cab, *cab );
+	borrar_celda( 'A' + x2, y2 + 1, cab, *cab );
+	insertar_celda( 'A' + x1, y1 + 1, cab, *cab, aux2 );
+	insertar_celda( 'A' + x2, y2 + 1, cab, *cab, aux1 );
+}
+
 void intercambiar_celdas( struct nodo** cab, int* xy, char* aux1, char* aux2 ){
 	borrar_celda( 'A' + xy[0], xy[1] + 1, cab, *cab );
 	borrar_celda( 'A' + xy[2], xy[3] + 1, cab, *cab );

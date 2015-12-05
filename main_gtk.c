@@ -141,9 +141,6 @@ static void execute_command( GtkWidget* widget, GdkEventKey* event ){
 			gtk_button_set_label( (GtkButton*)celda[coordinates[2]][coordinates[3]], aux1 );
 			intercambiar_celdas( &hoja1, coordinates, aux1, aux2 );
 			gtk_widget_hide( input_window );
-		}	
-		else if( command_parser( command, coordinates ) == 8 && validate_range( x, y, coordinates, 8 )){
-			gtk_widget_hide( input_window );
 		}else if( command_parser( command, coordinates ) == 5 && validate_range( x,y, coordinates, 4 )){
 			aux1 = g_strconcat( aux1, gtk_button_get_label( (GtkButton*)celda[coordinates[0]][coordinates[1]] ), NULL );
 			borrar_celda( 'A' + coordinates[2], coordinates[3] + 1, &hoja1, hoja1 );
@@ -168,7 +165,7 @@ static void execute_command( GtkWidget* widget, GdkEventKey* event ){
 					break;
 				case 2:
 					for( int i = 0; i <= coordinates[3] - coordinates[1]; i++ ){
-						aux1 = g_strconcat( aux1, gtk_button_get_label( (GtkButton*)celda[coordinates[0] + i][coordinates[1]] ), NULL );
+						aux1 = g_strconcat( aux1, gtk_button_get_label( (GtkButton*)celda[coordinates[0]][coordinates[1] + i] ), NULL );
 						borrar_celda( 'A' + coordinates[4] + i, coordinates[5] + 1, &hoja1, hoja1 );
 						insertar_celda( 'A' + coordinates[4] + i, coordinates[5] + 1, &hoja1, hoja1, aux1 );
 						gtk_button_set_label( (GtkButton*)celda[coordinates[4] + i][coordinates[5]], aux1 );
@@ -200,13 +197,60 @@ static void execute_command( GtkWidget* widget, GdkEventKey* event ){
 					g_signal_connect_swapped( dialog, "response", G_CALLBACK( gtk_widget_destroy ), dialog );
 					gtk_dialog_run( (GtkDialog*)dialog );
 					break;
-
 			}
-//				aux1 = g_strconcat( aux1, gtk_button_get_label( (GtkButton*)celda[coordinates[0]][coordinates[1]] ), NULL );
-//				borrar_celda( 'A' + coordinates[2], coordinates[3] + 1, &hoja1, hoja1 );
-//				insertar_celda( 'A' + coordinates[2], coordinates[3] + 1, &hoja1, hoja1, aux1 );
-//				gtk_button_set_label( (GtkButton*)celda[coordinates[2]][coordinates[3]], aux1 );
-//				gtk_widget_hide( input_window );
+			/*-- INTERCAMBIO Y MOVER SE ENCUENTRAN AQUI! --*/
+		}else if( command_parser( command, coordinates ) == 8 ){
+			switch( validate_group( x, y, coordinates ) ){
+				case 1:
+					for( int i = 0; i <= coordinates[3] - coordinates[1]; i++ ){
+						aux1 = g_strconcat( aux1, gtk_button_get_label( (GtkButton*)celda[coordinates[0]][coordinates[1] + i] ), NULL );
+						aux2 = g_strconcat( aux2, gtk_button_get_label( (GtkButton*)celda[coordinates[4]][coordinates[5] + i] ), NULL );
+						gtk_button_set_label( (GtkButton*)celda[coordinates[0]][coordinates[1] + i], aux2 );
+						gtk_button_set_label( (GtkButton*)celda[coordinates[4]][coordinates[5] + i], aux1 );
+						intercambiar_celdas_r( &hoja1, coordinates[0], coordinates[1] + i, coordinates[4], coordinates[5] + i, aux1, aux2 );
+						aux1 = ""; aux2 = "";
+					}
+					gtk_widget_hide( input_window );
+					break;
+				case 2:
+					for( int i = 0; i <= coordinates[3] - coordinates[1]; i++ ){
+						aux1 = g_strconcat( aux1, gtk_button_get_label( (GtkButton*)celda[coordinates[0]][coordinates[1] + i] ), NULL );
+						aux2 = g_strconcat( aux2, gtk_button_get_label( (GtkButton*)celda[coordinates[4] + i][coordinates[5]] ), NULL );
+						gtk_button_set_label( (GtkButton*)celda[coordinates[0]][coordinates[1] + i], aux2 );
+						gtk_button_set_label( (GtkButton*)celda[coordinates[4] + i][coordinates[5]], aux1 );
+						intercambiar_celdas_r( &hoja1, coordinates[0], coordinates[1] + i, coordinates[4] + i, coordinates[5], aux1, aux2 );
+						aux1 = ""; aux2 = "";
+					}
+					gtk_widget_hide( input_window );
+					break;
+				case 3:
+					for( int i = 0; i <= coordinates[2] - coordinates[0]; i++ ){
+						aux1 = g_strconcat( aux1, gtk_button_get_label( (GtkButton*)celda[coordinates[0] + i][coordinates[1]] ), NULL );
+						aux2 = g_strconcat( aux2, gtk_button_get_label( (GtkButton*)celda[coordinates[4] + i][coordinates[5]] ), NULL );
+						gtk_button_set_label( (GtkButton*)celda[coordinates[0] + i][coordinates[1]], aux2 );
+						gtk_button_set_label( (GtkButton*)celda[coordinates[4] + i][coordinates[5]], aux1 );
+						intercambiar_celdas_r( &hoja1, coordinates[0] + i, coordinates[1], coordinates[4] + i, coordinates[5], aux1, aux2 );
+						aux1 = ""; aux2 = "";
+					}
+					gtk_widget_hide( input_window );
+					break;
+				case 4:
+					for( int i = 0; i <= coordinates[2] - coordinates[0]; i++ ){
+						aux1 = g_strconcat( aux1, gtk_button_get_label( (GtkButton*)celda[coordinates[0] + i][coordinates[1]] ), NULL );
+						aux2 = g_strconcat( aux2, gtk_button_get_label( (GtkButton*)celda[coordinates[4]][coordinates[5] + i] ), NULL );
+						gtk_button_set_label( (GtkButton*)celda[coordinates[0] + i][coordinates[1]], aux2 );
+						gtk_button_set_label( (GtkButton*)celda[coordinates[4]][coordinates[5] + i], aux1 );
+						intercambiar_celdas_r( &hoja1, coordinates[0] + i, coordinates[1], coordinates[4], coordinates[5] + i, aux1, aux2 );
+						aux1 = ""; aux2 = "";
+					}
+					gtk_widget_hide( input_window );
+					break;
+				case 0:
+					g_signal_connect_swapped( dialog, "response", G_CALLBACK( gtk_widget_destroy ), dialog );
+					gtk_dialog_run( (GtkDialog*)dialog );
+					break;
+			}
+			/*-- AQUI TERMINA MOVER Y INTERCAMBIAR CELDAS --*/
 		}else{
 			g_signal_connect_swapped( dialog, "response", G_CALLBACK( gtk_widget_destroy ), dialog );
 			gtk_dialog_run( (GtkDialog*)dialog );
