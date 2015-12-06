@@ -41,5 +41,15 @@ int command_parser( char* string, int* array ){
 		return 1;
 	else if( sscanf( string, "prom %d,%d:%d,%d->%d,%d", &array[0], &array[1], &array[2], &array[3], &array[4], &array[5] ) == 6 )
 		return 3;
+	else if( sscanf( string, "prom %d,%d:%d,%d->%d,%d", &array[0], &array[1], &array[2], &array[3], &array[4], &array[5] ) == 6 )
+		return 3;
+	return 0;
+}
+
+int save_load( char* string, char* filename ){
+	if( sscanf( string, "save %s", filename ) == 1 )
+		return 1;
+	else if( sscanf( string, "load %s", filename ) == 1 )
+		return 2;
 	return 0;
 }

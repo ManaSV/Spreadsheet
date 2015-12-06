@@ -31,10 +31,7 @@ int x, y;
 GtkWidget* input_window;
 
 int main (int argc, char *argv[]) {
-	printf( "INGRESE NUMERO DE COLUMNAS: " );
-	scanf( "%d", &x );
-	printf( "INGRESE NUMERO DE FILAS: " );
-	scanf( "%d", &y );
+	x = 25; y = 25;
 	init_hoja( x, y );
 	gtk_init (&argc, &argv);
 	location = malloc( sizeof(int) * 2 );
@@ -124,6 +121,57 @@ int validate_group( int x, int y, int* coor ){
 		return 0;
 }
 
+char* getstring( FILE* savefile ){
+	char* string = malloc( 60 );
+	for( int i = 0; i < 60; i++ ){
+		string[i] = fgetc( savefile );
+		if( string[1] == '\n' ){
+			string = "";
+			break;
+		}else if( string[i] == '\n' ){
+			string[i] = '\0';
+			break;
+		}
+	}
+	return string;
+}
+
+void save( char* filename ){
+	char* path = "./";
+	char* string = "";
+	path = g_strconcat( path, filename, NULL );
+	FILE* savefile = fopen( path, "w" );
+	for( int i = 0; i <= x - 1; i++ ){
+		for( int j = 0; j <= y - 1; j++ ) {
+			string = g_strconcat( string ,gtk_button_get_label( (GtkButton*)celda[i][j] ), NULL );
+			fprintf( savefile, "%s\n", string );
+			string = "";
+		}
+	}
+	fclose( savefile );
+}
+
+int load( char* filename ){
+	char* path = "./";
+	char* string;
+	path = g_strconcat( path, filename, NULL );
+	if( access( path,F_OK ) != -1 ){
+		FILE* savefile = fopen( path, "r" );
+		for( int i = 0; i <= x - 1; i++ ){
+			for( int j = 0; j <= y - 1; j++ ) {
+				string = getstring( savefile );
+				if( strcmp( string, "") ){
+					gtk_button_set_label( (GtkButton*)celda[i][j], string );
+					insertar_celda( 'A' + i, j + 1, &hoja1, hoja1, string );
+				}
+			}
+		}
+		fclose( savefile );
+	}else{
+		return -1;
+	}
+}
+
 static void execute_command( GtkWidget* widget, GdkEventKey* event ){
 	if( event->keyval == GDK_KEY_Return ){ //detecta si el key es enter
 		GtkDialogFlags flags = GTK_DIALOG_MODAL;
@@ -133,6 +181,7 @@ static void execute_command( GtkWidget* widget, GdkEventKey* event ){
 
 		int* coordinates = malloc( sizeof( int ) * 8 );
 		gchar *aux1 = "", *aux2 = "";
+		char* filename = malloc( 50 );
 		command = "";
 		command = g_strconcat( command, gtk_entry_get_text( (GtkEntry*)widget ), NULL );
 		//concatena la cadena, aqui debera estar la funcion de parsear
@@ -297,6 +346,15 @@ static void execute_command( GtkWidget* widget, GdkEventKey* event ){
 				insertar_celda( 'A' + coordinates[4], coordinates[5] + 1, &hoja1, hoja1, math );
 				gtk_widget_hide( input_window );
 			}
+		}else if( save_load( command, filename ) == 1 ){
+				save( filename );
+				gtk_widget_hide( input_window );
+		}else if( save_load( command, filename ) == 2 ){
+			if( load( filename ) == -1 ){
+				g_signal_connect_swapped( dialog, "response", G_CALLBACK( gtk_widget_destroy ), dialog );
+				gtk_dialog_run( (GtkDialog*)dialog );
+			}else
+				gtk_widget_hide( input_window );
 		}else{
 			g_signal_connect_swapped( dialog, "response", G_CALLBACK( gtk_widget_destroy ), dialog );
 			gtk_dialog_run( (GtkDialog*)dialog );
