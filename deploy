@@ -1,0 +1,10 @@
+#!/bin/bash
+if [ "uname -r | grep "ARCH"" ]; then
+	sudo pacman -S gtk3
+elif [ "uname -r | grep "generic"" ]; then
+	sudo apt-get install libgtk-3.0-dev
+fi
+gcc -std=c99 `pkg-config --cflags gtk+-3.0` -o calctech spreadsheet.c `pkg-config --libs gtk+-3.0` -lm &&
+sudo cp ./calctech /usr/local/bin &&
+sudo chmod +x /usr/local/bin/calctech
+#*buntu compatible

@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "mathParser.c"
-#include "move.c"
-#include "./lib_calculo/hoja_calculo.c"
+#include "./lib/mathParser.c"
+#include "./lib/move.c"
+#include "./lib/hoja_calculo.c"
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <gdk/gdkkeysyms.h>
@@ -31,7 +31,7 @@ int x, y;
 GtkWidget* input_window;
 
 int main (int argc, char *argv[]) {
-	x = 25; y = 25;
+	x = 20; y = 20;
 	init_hoja( x, y );
 	gtk_init (&argc, &argv);
 	location = malloc( sizeof(int) * 2 );
@@ -163,7 +163,8 @@ int load( char* filename ){
 				if( strcmp( string, "") ){
 					gtk_button_set_label( (GtkButton*)celda[i][j], string );
 					insertar_celda( 'A' + i, j + 1, &hoja1, hoja1, string );
-				}
+				}else
+					gtk_button_set_label( (GtkButton*)celda[i][j], "" );
 			}
 		}
 		fclose( savefile );
